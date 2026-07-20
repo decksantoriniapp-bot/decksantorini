@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Controle de Estoque</title>
+    
+    <!-- PWA configuration -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Estoque">
+    <link rel="apple-touch-icon" href="logo.png">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Great+Vibes&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+:root {
+    --primary-color: #a68a6b; /* Cor do logo Santorini */
+    --primary-hover: #8b7358;
+    --bg-gradient: linear-gradient(135deg, #fdfbf7 0%, #f4eee6 100%);
+    --text-color: #1e293b;
+    --text-light: #64748b;
+    --glass-bg: rgba(255, 255, 255, 0.7);
+    --glass-border: rgba(255, 255, 255, 0.5);
+    --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+    --error-color: #ef4444;
+    --success-color: #10b981;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter', sans-serif;
+}
+
+body {
+    background: var(--bg-gradient);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    color: var(--text-color);
+}
+
+.app-container {
+    width: 100%;
+    max-width: 500px;
+}
+
+.glass-card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-radius: 24px;
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow);
+    padding: 40px;
+    overflow: hidden;
+    position: relative;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.restaurant-logo {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 25px;
+}
+
+.restaurant-logo img {
+    max-width: 280px;
+    height: auto;
+    object-fit: contain;
+}
+
+h1 {
+    font-size: 18px;
+    font-weight: 700;
+    margin-top: 20px;
+    margin-bottom: 8px;
+    color: var(--text-color);
+}
+
+p {
+    color: var(--text-light);
+    font-size: 14px;
+}
+
+.tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 30px;
+    background: rgba(255, 255, 255, 0.5);
+    padding: 6px;
+    border-radius: 16px;
+}
+
+.tab-btn {
+    flex: 1;
+    padding: 12px 0;
+    border: none;
+    background: transparent;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-light);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.tab-btn.active {
+    background: white;
+    color: var(--primary-color);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.form-group {
+    margin-bottom: 24px;
+}
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+input[type="text"], .select-wrapper select {
+    width: 100%;
+    padding: 16px;
+    border: 2px solid transparent;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.8);
+    font-size: 15px;
+    color: var(--text-color);
+    transition: all 0.3s ease;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
+}
+
+input[type="text"]:focus, .select-wrapper select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    background: white;
+    box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+}
+
+input[type="text"]::placeholder {
+    color: #94a3b8;
+}
+
+.select-wrapper {
+    position: relative;
+}
+
+.select-wrapper select {
+    appearance: none;
+    -webkit-appearance: none;
+    padding-right: 40px;
+    cursor: pointer;
+}
+
+.select-wrapper select:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.select-wrapper::after {
+    content: '';
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 12px;
+    height: 12px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2364748b'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+    background-size: contain;
+    background-repeat: no-repeat;
+    pointer-events: none;
+}
+
+button[type="submit"] {
+    width: 100%;
+    padding: 16px;
+    border: none;
+    border-radius: 16px;
+    background: var(--primary-color);
+    color: white;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+}
+
+button[type="submit"]:hover {
+    background: var(--primary-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+}
+
+button[type="submit"]:active {
+    transform: translateY(0);
+}
+
+/* Loader */
+.loader {
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(255,255,255,0.3);
+    border-radius: 50%;
+    border-top-color: white;
+    animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.hidden {
+    display: none !important;
+}
+
+#status-message {
+    margin-top: 20px;
+    padding: 12px;
+    border-radius: 12px;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.status-success {
+    background: rgba(16, 185, 129, 0.1);
+    color: var(--success-color);
+}
+
+.status-error {
+    background: rgba(239, 68, 68, 0.1);
+    color: var(--error-color);
+}
+
+@media (max-width: 480px) {
+    .glass-card {
+        padding: 30px 20px;
+        border-radius: 20px;
+    }
+}
+
+</style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="glass-card">
+            <header>
+                <div class="restaurant-logo">
+                    <img src="logo.png" alt="Deck Santorini Logo">
+                </div>
+                <h1>Controle de Estoque</h1>
+                <p>Selecione a área para registrar a contagem</p>
+            </header>
+
+            <div class="tabs">
+                <button class="tab-btn active" data-tab="Bar">Bar</button>
+                <button class="tab-btn" data-tab="Cozinha">Cozinha</button>
+            </div>
+
+            <form id="estoque-form">
+                <div class="form-group">
+                    <label for="categoria">Categoria</label>
+                    <div class="select-wrapper">
+                        <select id="categoria" required>
+                            <option value="" disabled selected>Selecione uma categoria...</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="produto">Produto</label>
+                    <div class="select-wrapper">
+                        <select id="produto" required disabled>
+                            <option value="" disabled selected>Selecione a categoria primeiro...</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="quantidade">Quantidade / Kg</label>
+                    <input type="text" id="quantidade" placeholder="Ex: 25 und, 1 dedo, 1/2 kg..." required autocomplete="off">
+                </div>
+
+                <div class="form-group">
+                    <label for="responsavel">Responsável</label>
+                    <div class="select-wrapper">
+                        <select id="responsavel" required>
+                            <option value="" disabled selected>Selecione o responsável...</option>
+                            <option value="Rafael">Rafael</option>
+                            <option value="Guilherme">Guilherme</option>
+                            <option value="Mateus">Mateus</option>
+                            <option value="Chefe Felipe">Chefe Felipe</option>
+                            <option value="Dona Hale">Dona Hale</option>
+                            <option value="Lua">Lua</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button type="submit" id="submit-btn">
+                    <span>Enviar Contagem</span>
+                    <div class="loader hidden"></div>
+                </button>
+                <div id="status-message" class="hidden"></div>
+            </form>
+        </div>
+    </div>
+    <script>
+const dataEstoque = {
+    "Bar": {
+        "Refrigerantes": [
+            "COCA NORMAL", "COCA ZERO", "GUARANÁ NORMAL", "GUARANÁ ZERO", 
+            "TÔNICA", "TÔNICA ZERO", "Schwepes citrus", "Fanta laranja"
+        ],
+        "Sucos e Águas": [
+            "SUCO UVA MITTO", "YAI CHA", "ÁGUA PLATINA 1 L", "ÁGUA GÁS", 
+            "ÁGUA SEM GÁS", "SUCO CEREJA"
+        ],
+        "Energéticos": [
+            "ENERGÉTICO MELANCIA", "ENERGÉTICO TROPICAL"
+        ],
+        "Cervejas": [
+            "HEINEKEN", "BLUE MOON", "HEINEKEN 0 0", "CORONA", "STELLA", 
+            "ALMAZA", "Cerpa"
+        ],
+        "Destilados e Licores": [
+            "VODKA", "TEQUILA", "GIN", "OUZO", "METAXA", "CACHAÇA SALINAS", 
+            "MASTIC", "BARCADI PRATA", "STOCK PÊSSEGO", "STOCK CURAÇAU BLUE", 
+            "BLACK LABEL", "STOCK CASSIS", "VERMOUTH", "CAMPARI", "APEROL", 
+            "LICOR 43", "CONTINI", "TSIPOURO", "GENTLEMAN JACK"
+        ],
+        "Xaropes e Frutas": [
+            "MONIN MAÇA VERDE", "MONIN AMORA", "MONIN CEREJA", "MONIN GRENADINE", 
+            "MONIN FRAMBOESA", "Monin mirtilo", "Kaly cranberry", "Kaly melancia", 
+            "Melancia", "Laranja"
+        ],
+        "Cafés e Outros": [
+            "CAFÉ DILI"
+        ],
+        "Vinhos": [
+            "Canava chrissou", "Black cubed", "Lexis Gris", "malagousia", 
+            "chardonnay", "Nemea", "atropina TINTO", "Atropia ROSE", 
+            "Atropia BRANCO", "MOSCOPHILERO", "Enotria Cabernet Sauvignon"
+        ]
+    },
+    "Cozinha": {
+        "Carnes Bovinas e Suínas": [
+            "Carré", "Filé Mignon", "Ancho", "Coxao Mole", "CopaLombo", 
+            "Carne moida", "Carneiro", "Espeto bov", "Espeto Suino"
+        ],
+        "Aves": [
+            "Peito Frango", "Coxa Sobrecoxa", "Espeto frango"
+        ],
+        "Frutos do Mar": [
+            "Camarao", "Polvo", "Lula", "Manjuba", "Salmao", "Tilapia"
+        ],
+        "Laticínios e Geladeira": [
+            "Queijo feta", "Coalhada Serramar", "Queijo tulha", "Manteiga", 
+            "Leite", "Mussarela", "Gelato", "Gelo"
+        ],
+        "Massas e Pães": [
+            "Pao arabe", "Massa fillo", "Linguines", "Spaghetti", 
+            "Spaghetti furado", "Pao Frances", "Pao australiano", 
+            "Risone", "Duzia pita"
+        ],
+        "Mercearia e Secos": [
+            "Açucar", "Extrato elefante", "Oleo Vegetal 14,4 kg", "Shoyu", 
+            "Vinho Cozinha", "Maionese", "Extrato", "Sal", "Farinha 1 kg", 
+            "Paprica", "Oleo Girassol", "Fermento bio sec", "Castanha de Caju", 
+            "Nozes", "Grao de bico", "Semolina", "Mel", "Canela", "Azeite", 
+            "Pistache", "Azeitona Kalamata", "Oregano", "Folha de uva"
+        ],
+        "Hortifruti": [
+            "Abobrinha", "Berinjela", "Uva Verde", "Alface", "Limao Siciliano", 
+            "Batata DV", "Tomate cereja", "Pepino", "Tomate", "Pimentao Verde", 
+            "Pimentao Vermelho", "Pimentao Amarelo", "Cebola Branca", 
+            "Cebola Roxa", "Tomilho", "Maracuja", "Melancia", "Salsa", 
+            "Coentro", "Alho", "Laranja", "Limao Tahiti", "Rucula", 
+            "Manjericao", "Hortela"
+        ]
+    }
+};
+
+const URL_DO_SCRIPT = "https://script.google.com/macros/s/AKfycbzlrtt8UN9MQdogJfAUX25-J2NHq51dCKUiHC-T1IzDN1zx6amY-7osY41iWnA9eZwQTw/exec"; // URL de integração com Google Sheets
+
+let abaAtual = "Bar";
+
+const tabs = document.querySelectorAll('.tab-btn');
+const catSelect = document.getElementById('categoria');
+const prodSelect = document.getElementById('produto');
+const form = document.getElementById('estoque-form');
+const btnSubmit = document.getElementById('submit-btn');
+const btnText = btnSubmit.querySelector('span');
+const btnLoader = btnSubmit.querySelector('.loader');
+const statusMessage = document.getElementById('status-message');
+
+function popularCategorias() {
+    catSelect.innerHTML = '<option value="" disabled selected>Selecione uma categoria...</option>';
+    prodSelect.innerHTML = '<option value="" disabled selected>Selecione a categoria primeiro...</option>';
+    prodSelect.disabled = true;
+
+    const categorias = Object.keys(dataEstoque[abaAtual]);
+    categorias.forEach(cat => {
+        const option = document.createElement('option');
+        option.value = cat;
+        option.textContent = cat;
+        catSelect.appendChild(option);
+    });
+}
+
+function popularProdutos() {
+    const categoriaSelecionada = catSelect.value;
+    prodSelect.innerHTML = '<option value="" disabled selected>Selecione o produto...</option>';
+    
+    if(categoriaSelecionada) {
+        const produtos = dataEstoque[abaAtual][categoriaSelecionada];
+        produtos.forEach(prod => {
+            const option = document.createElement('option');
+            option.value = prod;
+            option.textContent = prod;
+            prodSelect.appendChild(option);
+        });
+        prodSelect.disabled = false;
+    }
+}
+
+// Event Listeners
+tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+        tabs.forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        abaAtual = tab.dataset.tab;
+        popularCategorias();
+    });
+});
+
+catSelect.addEventListener('change', popularProdutos);
+
+// Carregar nome do responsável salvo no LocalStorage
+const nomeSalvo = localStorage.getItem('estoque_responsavel');
+if (nomeSalvo) {
+    document.getElementById('responsavel').value = nomeSalvo;
+}
+
+form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const categoria = catSelect.value;
+    const produto = prodSelect.value;
+    const quantidade = document.getElementById('quantidade').value;
+    const responsavel = document.getElementById('responsavel').value;
+
+    if(!produto || !categoria) {
+        mostrarStatus('Por favor, preencha todos os campos corretamente.', 'error');
+        return;
+    }
+
+    // Salvar o nome no LocalStorage para a próxima vez
+    localStorage.setItem('estoque_responsavel', responsavel);
+
+    const payload = {
+        aba: abaAtual,
+        categoria: categoria,
+        produto: produto,
+        quantidade: quantidade,
+        responsavel: responsavel,
+        data: new Date().toLocaleString('pt-BR')
+    };
+
+    setLoading(true);
+
+    try {
+        if(URL_DO_SCRIPT === "URL_AQUI") {
+            // Simulação caso não tenha a URL ainda
+            await new Promise(r => setTimeout(r, 1000));
+            console.log("Dados que seriam enviados:", payload);
+            mostrarStatus('Modo de teste: Dados registrados com sucesso!', 'success');
+        } else {
+            const response = await fetch(URL_DO_SCRIPT, {
+                method: 'POST',
+                mode: 'no-cors', // O GAS requer no-cors para não dar erro bloqueante, mas não retorna res.json()
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            });
+            mostrarStatus('Contagem enviada com sucesso!', 'success');
+        }
+        
+        // Limpar os campos específicos (mantemos o responsável para agilizar múltiplas contagens)
+        document.getElementById('quantidade').value = '';
+        prodSelect.selectedIndex = 0;
+        
+    } catch (error) {
+        mostrarStatus('Erro ao enviar. Tente novamente.', 'error');
+        console.error(error);
+    } finally {
+        setLoading(false);
+    }
+});
+
+function setLoading(isLoading) {
+    if(isLoading) {
+        btnText.classList.add('hidden');
+        btnLoader.classList.remove('hidden');
+        btnSubmit.disabled = true;
+    } else {
+        btnText.classList.remove('hidden');
+        btnLoader.classList.add('hidden');
+        btnSubmit.disabled = false;
+    }
+}
+
+function mostrarStatus(mensagem, tipo) {
+    statusMessage.textContent = mensagem;
+    statusMessage.className = `status-${tipo}`;
+    statusMessage.classList.remove('hidden');
+    
+    setTimeout(() => {
+        statusMessage.classList.add('hidden');
+    }, 3000);
+});
+
+// PWA Service Worker Registration
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js')
+      .then(registration => {
+        console.log('ServiceWorker registration successful');
+      })
+      .catch(err => {
+        console.log('ServiceWorker registration failed: ', err);
+      });
+  });
+}
+
+// Inicializar
+popularCategorias();
+
+</script>
+</body>
+</html>
