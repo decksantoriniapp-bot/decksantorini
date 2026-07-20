@@ -15,7 +15,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Great+Vibes&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
 :root {
-    --primary-color: #a68a6b; /* Cor do logo Santorini */
+    --primary-color: #a68a6b;
     --primary-hover: #8b7358;
     --bg-gradient: linear-gradient(135deg, #fdfbf7 0%, #f4eee6 100%);
     --text-color: #1e293b;
@@ -211,7 +211,6 @@ button[type="submit"]:active {
     transform: translateY(0);
 }
 
-/* Loader */
 .loader {
     width: 20px;
     height: 20px;
@@ -493,7 +492,7 @@ form.addEventListener('submit', async (e) => {
         } else {
             const response = await fetch(URL_DO_SCRIPT, {
                 method: 'POST',
-                mode: 'no-cors', // O GAS requer no-cors para não dar erro bloqueante, mas não retorna res.json()
+                mode: 'no-cors', // O GAS requer no-cors para não dar erro bloqueante
                 headers: {
                     'Content-Type': 'application/json'
                 },
@@ -502,7 +501,7 @@ form.addEventListener('submit', async (e) => {
             mostrarStatus('Contagem enviada com sucesso!', 'success');
         }
         
-        // Limpar os campos específicos (mantemos o responsável para agilizar múltiplas contagens)
+        // Limpar os campos específicos (mantemos o responsável)
         document.getElementById('quantidade').value = '';
         prodSelect.selectedIndex = 0;
         
@@ -534,7 +533,7 @@ function mostrarStatus(mensagem, tipo) {
     setTimeout(() => {
         statusMessage.classList.add('hidden');
     }, 3000);
-});
+}
 
 // PWA Service Worker Registration
 if ('serviceWorker' in navigator) {
